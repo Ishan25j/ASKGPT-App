@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: communication-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: communication
+  template:
+    metadata:
+      labels:
+        app: communication
+    spec:
+      containers:
+        - name: communication
+          image: ishanjoshi25/communication
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: 'eventure'
+            - name: MONGO_URI
+              value: 'mongodb://communication-mongo-srv:27017/communication'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: communication-srv
+spec:
+  selector:
+    app: communication
+  ports:
+    - name: communication
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

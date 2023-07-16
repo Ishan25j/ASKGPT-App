@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatbot-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatbot
+  template:
+    metadata:
+      labels:
+        app: chatbot
+    spec:
+      containers:
+        - name: chatbot
+          image: ishanjoshi25/chatbotflask
+          # resourses:
+            # limits:
+              # nvidia.com/gpu: 1
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: 'chatbot'
+            - name: MONGO_URI
+              value: 'mongodb://chatbot-mongo-srv:27017/chatbot'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: PERF_MODEL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: perf-model-secret
+                  key: PERF_MODEL_KEY
+            - name: AUTOTOKEN_MODEL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: autotoken-model-secret
+                  key: AUTOTOKEN_MODEL_KEY
+                  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatbot-srv
+spec:
+  selector:
+    app: chatbot
+  ports:
+    - name: chatbot
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

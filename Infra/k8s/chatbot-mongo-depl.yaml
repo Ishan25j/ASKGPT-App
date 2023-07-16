@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatbot-mongo-depl
+spec:
+  selector:
+    matchLabels:
+      app: chatbot-mongo
+  template:
+    metadata:
+      labels:
+        app: chatbot-mongo
+    spec:
+      containers:
+      - name: chatbot-mongo
+        image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatbot-mongo-srv
+spec:
+  selector:
+    app: chatbot-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

@@ -1,0 +1,54 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  rules:
+    - host: chatbot.dev
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: auth-srv
+                port: 
+                  number: 3000
+          - path: /socket.io/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: chatbot-srv
+                port: 
+                  number: 3000
+          - path: /api/chatbot/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: 
+                name: chatbot-srv
+                port: 
+                  number: 3000
+          - path: /api/chats/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: 
+                name: communication-srv
+                port: 
+                  number: 3000
+          - path: /api/report/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: 
+                name: report-srv
+                port: 
+                  number: 3000
+          - path: /?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service: 
+                name: client-srv
+                port: 
+                  number: 3000
