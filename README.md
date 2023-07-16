@@ -4,6 +4,7 @@ ASKGPT is a chatbot application similiar to ChatGPT where, I have used Falcon-7b
 
 ## System Architecture
 
+![System Design](Docs/Images/ASKGPT.drawio.png)
 
 ## Component Defination
 
